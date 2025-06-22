@@ -1,0 +1,33 @@
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.health-check-container {
+  background-color: #031324;
+  padding: 2rem;
+  font-family: sans-serif;
+  text-align: center;
+  border-radius: 20px;
+  min-width: 50%;
+  min-height: 50%;
+}
+
+.go-chat-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background-color: #007bff;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  z-index: 100;
+}
+
+.go-chat-button a {
+  color: white;
+  text-decoration: none;
+}
