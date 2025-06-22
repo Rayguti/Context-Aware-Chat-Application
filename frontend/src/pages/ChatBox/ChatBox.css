@@ -76,6 +76,12 @@ body {
   border-bottom-left-radius: 0;
 }
 
+.ai-typing {
+  font-style: italic;
+  color: #888;
+  position: relative;
+}
+
 .chatbot-loading {
   font-style: italic;
   color: #888;
@@ -198,4 +204,11 @@ body {
 
 .history-msg.ai {
   background-color: #2a2a40;
+}
+
+.history-active {
+  background-color: #64647e;
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }

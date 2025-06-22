@@ -1,47 +1,59 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./ChatBox.css";
 import { Link } from "react-router-dom";
 import type { Message } from "../../models/Message";
-import type { Conversation } from "../../models/Conversation";
+import type { Conversations } from "../../models/Conversations";
 import { sendMessageToChatbot } from "../../services/chatService";
+import { fetchConversations } from "../../services/chatService";
 
 function ChatBox() {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversations, setConversations] = useState<Conversations>();
   const [activeConversationId, setActiveConversationId] = useState<
     string | null
   >(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  // const controllerRef = useRef<AbortController | null>(null);
+
+  const loadConversations = async () => {
+    try {
+      const conversations = await fetchConversations();
+      setConversations(conversations);
+      console.log("Conversations loaded:", conversations);
+    } catch (error) {
+      console.error("Error loading conversations:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadConversations();
+  }, []);
 
   const sendMessage = async () => {
     if (!input.trim()) return; //if the message is empty, do nothing
 
-    const userMessage: Message = { type: "user", content: input };
+    const userMessage: Message = { role: "user", content: input };
 
     setMessages((prev) => [...prev, userMessage]);
 
     setInput("");
     setLoading(true);
 
-    //this catch is to handle any errors that might occur during the fetch request
-    //primarily network errors or issues with the backend service
     try {
-      // If there's an active conversation, use its ID; otherwise, create a new one
-      // the convId is used to avoid problems with the fetch in "activeConversationId"
       let convId = activeConversationId;
+
       if (!convId) {
         convId = Date.now().toString();
         setActiveConversationId(convId);
+        loadConversations();
       }
-      //TODO: this has to be a service call to the backend
+
       const response = await sendMessageToChatbot(input, convId);
 
       if (!response.body) {
         setMessages((prev) => [
           ...prev,
-          { type: "ai", content: "[Error: empty response]" },
+          { role: "assistant", content: "[Error: empty response]" },
         ]);
         setLoading(false);
         return;
@@ -55,10 +67,11 @@ function ChatBox() {
         const { done, value } = await reader.read();
         if (done) break;
 
+        //this line is just improve the typing effect
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
         const chunk = decoder.decode(value, { stream: true });
         const lines = chunk.trim().split("\n");
-
-        // console.log(lines);
 
         for (const line of lines) {
           if (!line.trim().startsWith("data:")) continue;
@@ -71,17 +84,31 @@ function ChatBox() {
 
             if (json.type === "content") {
               aiContent += json.content;
+
+              //This is to update the last message with the typing indicator
+              setMessages((prev) => {
+                const last = prev[prev.length - 1];
+
+                if (last?.role === "typing") {
+                  return [
+                    ...prev.slice(0, -1),
+                    { role: "typing", content: aiContent },
+                  ];
+                }
+
+                return [...prev, { role: "typing", content: aiContent }];
+              });
             } else if (json.type === "done") {
               setMessages((prev) => [
-                ...prev,
-                { type: "ai", content: aiContent },
+                ...prev.slice(0, -1),
+                { role: "assistant", content: aiContent },
               ]);
               setLoading(false);
             } else if (json.type === "error") {
               console.error("Error desde backend:", json.content);
               setMessages((prev) => [
                 ...prev,
-                { type: "ai", content: `❌ Error: ${json.content}` },
+                { role: "assistant", content: `❌ Error: ${json.content}` },
               ]);
               setLoading(false);
             }
@@ -95,7 +122,7 @@ function ChatBox() {
     } catch (error) {
       setMessages((prev) => [
         ...prev,
-        { type: "ai", content: "[Error connecting to Chatbot] " },
+        { role: "assistant", content: "[Error connecting to Chatbot] " },
       ]);
       setLoading(false);
       return;
@@ -104,10 +131,12 @@ function ChatBox() {
 
   return (
     <div id="root">
+      {/* Health */}
       <div className="go-health-button">
         <Link to="/health">Health Page</Link>
       </div>
 
+      {/* Chatbot */}
       <div className="chatbot-container">
         <h1 className="chatbot-title">Chatbot PDF</h1>
         <div className="chatbot-messages">
@@ -115,7 +144,11 @@ function ChatBox() {
             <div
               key={i}
               className={`chatbot-message ${
-                msg.type === "user" ? "user-message" : "ai-message"
+                msg.role === "user"
+                  ? "user-message"
+                  : msg.role === "assistant"
+                  ? "ai-message"
+                  : "ai-typing"
               }`}
             >
               <span>{msg.content}</span>
@@ -130,7 +163,7 @@ function ChatBox() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                e.preventDefault(); // evita que el enter haga submit o salte de línea
+                e.preventDefault();
                 sendMessage();
               }
             }}
@@ -153,16 +186,27 @@ function ChatBox() {
         </button>
       </div>
 
-      {/* Panel de historial */}
+      {/* History */}
       <div className="chat-history-panel">
         <h2>History</h2>
         <div className="chat-history-messages">
-          {messages.map((msg, i) => (
-            <div key={i} className={`history-msg ${msg.type}`}>
-              <strong>{msg.type === "user" ? "👤" : "🤖"}:</strong>{" "}
-              {msg.content}
-            </div>
-          ))}
+          {Object.entries(conversations ?? {}).map(([id, messages]) => {
+            const firstMessage =
+              messages.length > 0 ? messages[0].content : "No messages";
+
+            return (
+              <button
+                key={id}
+                className={activeConversationId === id ? "history-active" : ""}
+                onClick={() => {
+                  setActiveConversationId(id);
+                  setMessages(messages);
+                }}
+              >
+                <strong>{firstMessage}</strong>
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -1,24 +1,64 @@
-Backend Acquitecture: in this case I didn 't divade it to make more easy to read it
+# Setup Instructions
+
+- ### Backend
+
+- cd backend
+- pip install -r requirements.txt
+- uvicorn main:app --reload
+
+- ### Frontend
+
+- cd frontend
+- npm install
+- npm start
+
+## .env
+
+Please, review the env.example in both apps to check the notes, the most important one is to add the OpenAI Api key to the backend.
+
+# Documentation
+
+## Design decisions
+
+In both apps, the structure of the project is think it to be modular, scalable,
+
+## Challenges faced and solutions
+
+## Posible Improvements
+
+base de datos vectorial
+logins and users
+
+## Project Structure
+
+In both apps, the structure of the project is think it to be modular, maintainability
+
 backend/
-├── main.py # Carga app y routers
+├── main.py
 ├── core/
-│ └── config.py # Carga de env vars
+│ └── config.py
 ├── routers/
-│ ├── chat.py # /chat endpoint
-│ └── health.py # /health endpoint
+│ ├── chat.py
+│ └── health.py
 ├── services/
-│ ├── chat_service.py # Lógica de OpenAI
-│ └── pdf_loader.py # Cargar PDF
+│ ├── chat_service.py
+│ └── pdf_loader.py
 ├── models/
-│ └── schemas.py # Pydantic models
+│ └── schemas.py
 ├── utils/
-│ └── logger.py # Config de logging
+│ └── logger.py
 ├── tests/
-│ └── test_chat.py # Test de /chat
+│ └── test_chat.py
 ├── .env.example
 ├── requirements.txt
 
-explain prettier use
+- ### Backend
+
+- ### Frontend
+
+## Use examples and pictures
+
+## explain prettier use
 
 how to run backend
 

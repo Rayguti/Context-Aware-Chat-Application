@@ -20,7 +20,7 @@ async def ask_openai(message: str, pdf_context: str):
         ],
         stream=True
     )
-    #use to avoid sending the same content multiple times
+    #this is used to avoid sending the same content multiple times
     last_sent = ""
 
     async for chunk in response:

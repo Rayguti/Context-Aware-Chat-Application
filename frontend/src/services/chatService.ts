@@ -1,4 +1,4 @@
-import type { Conversation } from "../models/Conversation";
+import type { Conversations } from "../models/Conversations";
 
 export async function sendMessageToChatbot(
   message: string,
@@ -15,7 +15,7 @@ export async function sendMessageToChatbot(
   return response;
 }
 
-export async function fetchConversations(): Promise<Conversation[]> {
+export async function fetchConversations(): Promise<Conversations> {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/conversations`);
   if (!response.ok) {
     throw new Error("Failed to fetch conversations");

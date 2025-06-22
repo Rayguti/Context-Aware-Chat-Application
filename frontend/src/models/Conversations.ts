@@ -1,5 +1,5 @@
 import type { Message } from "./Message";
 
-export interface Conversation {
+export interface Conversations {
   [conversationId: string]: Message[];
 }
