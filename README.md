@@ -2,15 +2,15 @@
 
 - ### Backend
 
-- cd backend
-- pip install -r requirements.txt
-- uvicorn main:app --reload
+  - cd backend
+  - pip install -r requirements.txt
+  - uvicorn main:app --reload
 
 - ### Frontend
 
-- cd frontend
-- npm install
-- npm start
+  - cd frontend
+  - npm install
+  - npm start
 
 ## .env
 
@@ -20,14 +20,19 @@ Please, review the env.example in both apps to check the notes, the most importa
 
 ## Design decisions
 
-In both apps, the structure of the project is think it to be modular, scalable,
+In both apps, the structure of the project is think it to be modular, scalable, and looking for clean code
 
 ## Challenges faced and solutions
 
+- how to reduce the tokens
+- responsive design
+
 ## Posible Improvements
 
-base de datos vectorial
-logins and users
+- database
+- vectors and tokens reduction
+- logins and users
+- messages format
 
 ## Project Structure
 
@@ -57,8 +62,6 @@ backend/
 - ### Frontend
 
 ## Use examples and pictures
-
-## explain prettier use
 
 how to run backend
 

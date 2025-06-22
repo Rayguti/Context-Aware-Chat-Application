@@ -1,12 +1,11 @@
 import json
-import uuid
 from fastapi import APIRouter
 from sse_starlette.sse import EventSourceResponse
 from models.schemas import ChatRequest
 from services.chat_service import ask_openai
-from utils.context import pdf_text
+from utils.context import pdf_text, pdf_chunks
 
-# In-memory store for conversations
+# In-memory store for conversations, this is used in this way, because we are not using a database
 conversation_history = {}
 
 router = APIRouter()
@@ -20,12 +19,12 @@ async def chat_endpoint(req: ChatRequest):
     # Append user message to conversation history
     conversation_history[req.conversation_id].append({"role": "user", "content": req.message})
 
-    print(f"Received request for conversation ID: {req.conversation_id}")
+    # print(f"Received request for conversation ID: {req.conversation_id}")
 
     async def event_generator():
         try:
             collected_ai = ""
-            async for chunk in ask_openai(req.message, pdf_text):
+            async for chunk in ask_openai(req.message, pdf_chunks):
                 collected_ai += chunk
                 yield json.dumps({'type': 'content', 'content': chunk})
             yield json.dumps({'type': 'done'})
@@ -41,8 +40,23 @@ async def chat_endpoint(req: ChatRequest):
 
 @router.get("/conversation/{conv_id}")
 def get_conversation(conv_id: str):
+    if conv_id not in conversation_history:
+        return {"message": "Conversation not found"}, 404
     return conversation_history.get(conv_id, [])
 
+## To clear the chat history of a conversation, we can use this endpoint
+@router.delete("/conversation/{conv_id}")
+def delete_conversation(conv_id: str):
+    if conv_id not in conversation_history:
+        return {"message": "Conversation not found"}, 404
+    del conversation_history[conv_id]
+    return {"message": "Conversation deleted successfully"}
+        
+
+## This endpoint just returns the first message of each conversation, to save space and use like the title of the conversation (similar to a chat app)
 @router.get("/conversations")
 def get_conversation():
-    return conversation_history
+    return {
+        conv_id: [messages[0]] if messages else []
+        for conv_id, messages in conversation_history.items()
+    }

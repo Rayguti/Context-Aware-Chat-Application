@@ -1,19 +1,22 @@
 import openai
-
+from utils.keyword_search import find_relevant_chunks
 from core.config import OPENAI_API_KEY
 
 openai.api_key = OPENAI_API_KEY
 
-def build_prompt(user_message: str, pdf_context: str) -> str:
-    ###this is use to process the PDF in parts, so it doesn't exceed the token limit
-    trimmed_context = pdf_context [:6000]
+"""This module contains the logic to interact with OpenAI's API, uses chuncks to reduce token costs """
+def build_prompt(user_message: str, relevant_chunks: list[str]) -> str:
 
-    return f"Document:\n{trimmed_context}\n\nUser Question: {user_message}\nAnswer:"
+    context = "\n\n---\n\n".join(relevant_chunks)
 
-async def ask_openai(message: str, pdf_context: str):
-    prompt = build_prompt(message, pdf_context)
+    return f"Document:\n{context}\n\nUser Question: {user_message}\nAnswer:"
+
+async def ask_openai(message: str, all_chunks: list[str]):
+    relevant_chunks = find_relevant_chunks(message, all_chunks)
+
+    prompt = build_prompt(message, relevant_chunks)
     response = await openai.ChatCompletion.acreate(
-        model="gpt-3.5-turbo",
+        model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are a helpful assistant that answers based on a document."},
             {"role": "user", "content": prompt}

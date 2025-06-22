@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import "./ChatBox.css";
 import { Link } from "react-router-dom";
 import type { Message } from "../../models/Message";
-import type { Conversations } from "../../models/Conversations";
-import { sendMessageToChatbot } from "../../services/chatService";
+import type { Conversations } from "../../models/Conversation";
+import {
+  deleteMessages,
+  fetchMessages,
+  sendMessageToChatbot,
+} from "../../services/chatService";
 import { fetchConversations } from "../../services/chatService";
 
 function ChatBox() {
@@ -19,10 +23,40 @@ function ChatBox() {
     try {
       const conversations = await fetchConversations();
       setConversations(conversations);
-      console.log("Conversations loaded:", conversations);
     } catch (error) {
       console.error("Error loading conversations:", error);
     }
+  };
+
+  const loadMessages = async (conversationId: string) => {
+    try {
+      const messages = await fetchMessages(conversationId);
+      setMessages(messages);
+      setActiveConversationId(conversationId);
+    } catch (error) {
+      console.error("Error loading messages:", error);
+      setMessages([]);
+      setActiveConversationId(null);
+    }
+  };
+
+  const clearChat = async (conversationId: string) => {
+    try {
+      await deleteMessages(conversationId);
+      setMessages([]);
+      setActiveConversationId(null);
+      await loadConversations();
+    } catch (error) {
+      console.error("Error deleting messages:", error);
+      setMessages([]);
+      setActiveConversationId(null);
+    }
+  };
+
+  const newChat = () => {
+    setActiveConversationId(null);
+    setMessages([]);
+    setInput("");
   };
 
   useEffect(() => {
@@ -45,7 +79,7 @@ function ChatBox() {
       if (!convId) {
         convId = Date.now().toString();
         setActiveConversationId(convId);
-        loadConversations();
+        await loadConversations();
       }
 
       const response = await sendMessageToChatbot(input, convId);
@@ -117,7 +151,7 @@ function ChatBox() {
           }
         }
       }
-
+      await loadConversations();
       setLoading(false);
     } catch (error) {
       setMessages((prev) => [
@@ -132,12 +166,17 @@ function ChatBox() {
   return (
     <div id="root">
       {/* Health */}
-      <div className="go-health-button">
+      <button className="go-health-button">
         <Link to="/health">Health Page</Link>
-      </div>
+      </button>
 
       {/* Chatbot */}
       <div className="chatbot-container">
+        <div className="chat-history-messages">
+          <button className="new-chat-button" onClick={newChat}>
+            <strong>New conversation</strong>
+          </button>
+        </div>
         <h1 className="chatbot-title">Chatbot PDF</h1>
         <div className="chatbot-messages">
           {messages.map((msg, i) => (
@@ -177,8 +216,7 @@ function ChatBox() {
 
         <button
           onClick={() => {
-            setMessages([]);
-            localStorage.removeItem("chat-history");
+            clearChat(activeConversationId ?? "");
           }}
           className="chatbot-clear-button"
         >
@@ -199,8 +237,7 @@ function ChatBox() {
                 key={id}
                 className={activeConversationId === id ? "history-active" : ""}
                 onClick={() => {
-                  setActiveConversationId(id);
-                  setMessages(messages);
+                  loadMessages(id);
                 }}
               >
                 <strong>{firstMessage}</strong>
