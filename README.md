@@ -22,13 +22,13 @@ Please, review the env.example in both apps to check the notes, the most importa
 
 ## Project Structure
 
-In both apps, the structure of the project is think it to be modular, scalable, and looking for clean code. The solution for both backend and frontend use folders like models, routers, utils, services, hooks and others. This reason is looking to separate reposanbilities and make the code easier to read by modules.
+In both apps, the structure of the project is think it to be modular, scalable, and looking for clean code. The solution for both backend and frontend use folders like models, routers, utils, services, hooks and others. The reason is for looking separate reposanbilities and make the code easier to read by modules.
 
 ## Challenges faced and solutions
 
 #### 🧠 Token reduction
 
-One of the main challenges in this project was the high token cost when sending the full document to the language model. Initially, we tackled this by splitting the document into chunks and using keyword matching (==keyword_search.py==) to select the most relevant ones. While this reduced token usage, it had major limitations:
+One of the main challenges in this project was the high token cost when sending the full document to the language model. Initially, we tackled this by splitting the document into chunks and using keyword matching (**keyword_search.py**) to select the most relevant ones. While this reduced token usage, it had major limitations:
 
 - It relied on exact word matches.
 
@@ -36,7 +36,7 @@ One of the main challenges in this project was the high token cost when sending 
 
 - Produced irrelevant or incomplete results if phrasing differed.
 
-To improve relevance and efficiency, we switched to a semantic search approach using embeddings (==embedding_store.py==). This method converts both the user's question and document chunks into vector representations and selects the most similar ones based on cosine similarity.
+To improve relevance and efficiency, we switched to a semantic search approach using embeddings (**embedding_store.py**). This method converts both the user's question and document chunks into vector representations and selects the most similar ones based on cosine similarity.
 Benefits of Using Embeddings:
 
 - Understands semantic meaning, not just keywords.
