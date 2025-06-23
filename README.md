@@ -28,7 +28,7 @@ In both apps, the structure of the project is think it to be modular, scalable, 
 
 #### 🧠 Token reduction
 
-One of the main challenges in this project was the high token cost when sending the full document to the language model. Initially, we tackled this by splitting the document into chunks and using keyword matching (==keyword_search.py==) to select the most relevant ones. While this reduced token usage, it had major limitations:
+One of the main challenges in this project was the high token cost when sending the full document to the language model. Initially, we tackled this by splitting the document into chunks and using keyword matching (**keyword_search.py**) to select the most relevant ones. While this reduced token usage, it had major limitations:
 
 - It relied on exact word matches.
 
@@ -36,7 +36,7 @@ One of the main challenges in this project was the high token cost when sending 
 
 - Produced irrelevant or incomplete results if phrasing differed.
 
-To improve relevance and efficiency, we switched to a semantic search approach using embeddings (==embedding_store.py==). This method converts both the user's question and document chunks into vector representations and selects the most similar ones based on cosine similarity.
+To improve relevance and efficiency, we switched to a semantic search approach using embeddings (**embedding_store.py**). This method converts both the user's question and document chunks into vector representations and selects the most similar ones based on cosine similarity.
 Benefits of Using Embeddings:
 
 - Understands semantic meaning, not just keywords.
