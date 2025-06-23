@@ -22,7 +22,7 @@ Please, review the env.example in both apps to check the notes, the most importa
 
 ## Project Structure
 
-In both apps, the structure of the project is think it to be modular, scalable, and looking for clean code. The solution for both backend and frontend use folders like models, routers, utils, services, hooks and others. This reason is looking to separate reposanbilities and make the code easier to read by modules.
+In both apps, the structure of the project is think it to be modular, scalable, and looking for clean code. The solution for both backend and frontend use folders like models, routers, utils, services, hooks and others. The reason is for looking separate reposanbilities and make the code easier to read by modules.
 
 ## Challenges faced and solutions
 
