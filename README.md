@@ -89,33 +89,33 @@ A custom hook (useChat) was created that encapsulates all chat management logic:
 - Chat history display (user and AI messages)
 - Clear/reset conversation button
 
-✅ Clean, responsive design (can use any CSS framework or plain CSS)
-✅ Real-time streaming of AI responses (bonus: show typing indicator)
-✅ Messages should be clearly distinguished (user vs AI)
+✅ Clean, responsive design (can use any CSS framework or plain CSS).
+✅ Real-time streaming of AI responses (bonus: show typing indicator).
+✅ Messages should be clearly distinguished (user vs AI).
 
 #### 2. Backend (FastAPI)
 
-✅ Single endpoint for chat messages: POST /chat
-✅ PDF context loading on startup sera entregado por separado
-✅ Integration with OpenAI or Anthropic API (API keys will be provided)
-✅ Streaming response support using Server-Sent Events (SSE)
-✅ In-memory conversation history (no database required)
-✅ Health check endpoint: GET /health
+✅ Single endpoint for chat messages: POST /chat.
+✅ PDF context loading on startup sera entregado por separado.
+✅ Integration with OpenAI or Anthropic API (API keys will be provided).
+✅ Streaming response support using Server-Sent Events (SSE).
+✅ In-memory conversation history (no database required).
+✅ Health check endpoint: GET /health.
 
 #### 3. Context Handling
 
-✅ Load and parse the provided PDF on server startup
-✅ Include the PDF content as context in all AI API calls
-✅ Ensure the AI can accurately answer questions about the PDF content
+✅ Load and parse the provided PDF on server startup.
+✅ Include the PDF content as context in all AI API calls.
+✅ Ensure the AI can accurately answer questions about the PDF content.
 
-#### 4 Bonus
+#### 4. Bonus
 
-✅ Multiple conversation support (switch between different chat sessions) - **There is a only a user (no login system)**
-✅ Token/cost tracking display for API usage - **It's show in API console (estimated)**
-✅ Export conversation to text/markdown
-✅ Loading states and better error handling UI
-❌ Simple rate limiting on the backend
-✅ Markdown rendering for AI responses
+✅ Multiple conversation support (switch between different chat sessions) - **There is a only a user (no login system)**.
+✅ Token/cost tracking display for API usage - **It's show in API console (estimated)**.
+✅ Export conversation to text/markdown.
+✅ Loading states and better error handling UI.
+❌ Simple rate limiting on the backend.
+✅ Markdown rendering for AI responses.
 
 ## Posible Improvements
 
