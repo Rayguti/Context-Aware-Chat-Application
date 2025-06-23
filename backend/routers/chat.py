@@ -34,7 +34,6 @@ async def chat_endpoint(req: ChatRequest):
 
     return EventSourceResponse(event_generator())
 
-
 @router.get("/conversation/{conv_id}")
 def get_conversation(conv_id: str):
     if conv_id not in conversation_history:
@@ -57,3 +56,4 @@ def get_conversation():
         conv_id: [messages[0]] if messages else []
         for conv_id, messages in conversation_history.items()
     }
+

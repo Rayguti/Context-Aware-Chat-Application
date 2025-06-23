@@ -1,6 +1,6 @@
 
 from core.config import PDF_PATH
-from services.pdf_loader import extract_text_from_pdf, split_text_into_chunks
+from utils.pdf_loader import extract_text_from_pdf, split_text_into_chunks
 
 """Generates the context for the chat service by extracting text from a PDF file and splitting it into chunks."""
 pdf_text = extract_text_from_pdf(PDF_PATH)

@@ -1,6 +1,7 @@
 import "./ChatBox.css";
 import { Link } from "react-router-dom";
 import { useChat } from "../../hooks/useChat";
+import { downloadMarkdown } from "../../utils/downloadMessages";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -18,25 +19,6 @@ function ChatBox() {
     handleLoadMessages,
   } = useChat();
 
-  const downloadMarkdown = () => {
-    const markdownContent = messages
-      .map((msg) => {
-        const role = msg.role === "user" ? "**User**" : "**Assistant**";
-        return `${role}:\n\n${msg.content}\n`;
-      })
-      .join("\n---\n\n");
-
-    const blob = new Blob([markdownContent], { type: "text/markdown" });
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "conversation.md";
-    link.click();
-
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <div id="root">
       {/* Health */}
@@ -46,12 +28,11 @@ function ChatBox() {
 
       {/* Chatbot */}
       <div className="chatbot-container">
-        <button onClick={downloadMarkdown} className="chatbot-download-button">
+        <button
+          onClick={() => downloadMarkdown(messages)}
+          className="chatbot-download-button"
+        >
           ⬇ Markdown
-        </button>
-
-        <button className="new-chat-button" onClick={handleNewChat}>
-          <strong>New conversation</strong>
         </button>
 
         <h1 className="chatbot-title">Chatbot PDF</h1>
@@ -125,6 +106,11 @@ function ChatBox() {
           })}
         </div>
       </div>
+
+      {/* New Conversation Button */}
+      <button className="new-chat-button" onClick={handleNewChat}>
+        <strong>New conversation</strong>
+      </button>
     </div>
   );
 }

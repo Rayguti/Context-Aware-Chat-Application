@@ -96,6 +96,7 @@ export function useChat() {
         const { done, value } = await reader.read();
         if (done) break;
 
+        // use a small delay to simulate typing effect
         await new Promise((resolve) => setTimeout(resolve, 100));
 
         const chunk = decoder.decode(value, { stream: true });

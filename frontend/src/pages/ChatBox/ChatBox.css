@@ -178,6 +178,7 @@ body {
   color: white;
   border-left: 2px solid #222;
   overflow-y: auto;
+  text-align: center;
 }
 
 .chat-history-panel h2 {
@@ -247,23 +248,24 @@ body {
   }
 
   .chat-history-panel,
-  .new-chat-button,
   .go-health-button {
     position: static;
     margin: 0.5rem auto;
     width: 90%;
     text-align: center;
   }
+  .new-chat-button {
+    position: static;
+    margin: 0.5rem auto;
+    width: 95%;
+    text-align: center;
+  }
 }
 
-/* Pantallas medianas: Tablets */
-@media (min-width: 601px) and (max-width: 1024px) {
+@media (min-width: 601px) and (max-width: 1440px) {
   .chatbot-container {
     height: 80vh;
     padding: 1.25rem;
-  }
-  .chat-history-panel {
-    display: none;
   }
 
   .chatbot-title {
@@ -277,10 +279,10 @@ body {
   .chat-history-panel {
     width: 250px;
     font-size: 0.9rem;
+    position: static;
   }
 }
 
-/* Pantallas grandes: PC escritorio */
 @media (min-width: 1025px) {
   .chatbot-container {
     height: 90vh;
