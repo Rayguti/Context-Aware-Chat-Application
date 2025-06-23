@@ -110,7 +110,7 @@ A custom hook (useChat) was created that encapsulates all chat management logic:
 
 #### 4. Bonus
 
-✅ Multiple conversation support (switch between different chat sessions) - **There is a only a user (no login system)**.
+✅ Multiple conversation support (switch between different chat sessions) - **There is a only user (no login system)**.
 ✅ Token/cost tracking display for API usage - **It's show in API console (estimated)**.
 ✅ Export conversation to text/markdown.
 ✅ Loading states and better error handling UI.
