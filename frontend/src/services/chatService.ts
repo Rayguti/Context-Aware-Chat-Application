@@ -47,7 +47,7 @@ export async function deleteMessages(conversationId: string): Promise<void> {
   );
 
   if (!response.ok) {
-    const errorMessage = await response.text(); // También podrías usar `.json()` si tu backend retorna JSON
+    const errorMessage = await response.text();
     throw new Error(`Failed to delete messages: ${errorMessage}`);
   }
 }
