@@ -1,5 +1,7 @@
 import re
 
+"""This isnt the final solution, but was a tentative approach to find the embedding one"""
+
 """ This module provides a funtion to find relevant chunks,
  important use for remove stopwords to avoid noise in the search,
    and to find relevant chunks based on keywords extracted from the question. """
@@ -24,3 +26,4 @@ def find_relevant_chunks(question: str, chunks: list[str]) -> list[str]:
             relevant_chunks.append(chunk)
 
     return relevant_chunks
+

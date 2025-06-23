@@ -14,12 +14,16 @@ body {
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  flex-wrap: wrap;
 }
 
 .chatbot-container {
+  position: relative;
   width: 100%;
   max-width: 720px;
+  min-width: 280px;
   height: 90vh;
+  margin: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -219,4 +223,88 @@ body {
   border-radius: 8px;
   font-weight: bold;
   text-decoration: none;
+}
+
+@media (max-width: 600px) {
+  .chatbot-container {
+    height: auto;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .chatbot-title {
+    font-size: 1.5rem;
+  }
+
+  .chatbot-input {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .chatbot-send-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .chat-history-panel,
+  .new-chat-button,
+  .go-health-button {
+    position: static;
+    margin: 0.5rem auto;
+    width: 90%;
+    text-align: center;
+  }
+}
+
+/* Pantallas medianas: Tablets */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .chatbot-container {
+    height: 80vh;
+    padding: 1.25rem;
+  }
+  .chat-history-panel {
+    display: none;
+  }
+
+  .chatbot-title {
+    font-size: 1.75rem;
+  }
+
+  .chatbot-send-button {
+    font-size: 1rem;
+  }
+
+  .chat-history-panel {
+    width: 250px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Pantallas grandes: PC escritorio */
+@media (min-width: 1025px) {
+  .chatbot-container {
+    height: 90vh;
+    padding: 2rem;
+  }
+
+  .chatbot-title {
+    font-size: 2rem;
+  }
+
+  .chat-history-panel {
+    width: 300px;
+  }
+}
+
+.chatbot-download-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 8px 12px;
+  background-color: #2e332e;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  z-index: 10;
 }

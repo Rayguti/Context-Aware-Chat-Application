@@ -25,7 +25,9 @@ In both apps, the structure of the project is think it to be modular, scalable, 
 ## Challenges faced and solutions
 
 - how to reduce the tokens
+  - first approach
 - responsive design
+-
 
 ## Posible Improvements
 

@@ -5,3 +5,4 @@ load_dotenv()
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 PDF_PATH = os.getenv("PDF_PATH")
+

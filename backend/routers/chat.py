@@ -3,7 +3,6 @@ from fastapi import APIRouter
 from sse_starlette.sse import EventSourceResponse
 from models.schemas import ChatRequest
 from services.chat_service import ask_openai
-from utils.context import pdf_text, pdf_chunks
 
 # In-memory store for conversations, this is used in this way, because we are not using a database
 conversation_history = {}
@@ -19,12 +18,10 @@ async def chat_endpoint(req: ChatRequest):
     # Append user message to conversation history
     conversation_history[req.conversation_id].append({"role": "user", "content": req.message})
 
-    # print(f"Received request for conversation ID: {req.conversation_id}")
-
     async def event_generator():
         try:
             collected_ai = ""
-            async for chunk in ask_openai(req.message, pdf_chunks):
+            async for chunk in ask_openai(req.message):
                 collected_ai += chunk
                 yield json.dumps({'type': 'content', 'content': chunk})
             yield json.dumps({'type': 'done'})

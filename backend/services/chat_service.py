@@ -1,6 +1,7 @@
 import openai
-from utils.keyword_search import find_relevant_chunks
+from utils.embedding_store import search_similar_chunks
 from core.config import OPENAI_API_KEY
+import tiktoken
 
 openai.api_key = OPENAI_API_KEY
 
@@ -11,10 +12,12 @@ def build_prompt(user_message: str, relevant_chunks: list[str]) -> str:
 
     return f"Document:\n{context}\n\nUser Question: {user_message}\nAnswer:"
 
-async def ask_openai(message: str, all_chunks: list[str]):
-    relevant_chunks = find_relevant_chunks(message, all_chunks)
+async def ask_openai(message: str):
+    relevant_chunks = search_similar_chunks(message, top_k=3) 
 
     prompt = build_prompt(message, relevant_chunks)
+    print("🧮 Estimated tokens:", count_tokens(prompt))
+
     response = await openai.ChatCompletion.acreate(
         model="gpt-4o",
         messages=[
@@ -31,3 +34,8 @@ async def ask_openai(message: str, all_chunks: list[str]):
         if content and content != last_sent:
             last_sent = content
             yield content
+
+
+def count_tokens(text: str, model: str = "gpt-4o") -> int:
+    enc = tiktoken.encoding_for_model(model)
+    return len(enc.encode(text))

@@ -1,166 +1,40 @@
-import { useEffect, useState } from "react";
 import "./ChatBox.css";
 import { Link } from "react-router-dom";
-import type { Message } from "../../models/Message";
-import type { Conversations } from "../../models/Conversation";
-import {
-  deleteMessages,
-  fetchMessages,
-  sendMessageToChatbot,
-} from "../../services/chatService";
-import { fetchConversations } from "../../services/chatService";
+import { useChat } from "../../hooks/useChat";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 function ChatBox() {
-  const [conversations, setConversations] = useState<Conversations>();
-  const [activeConversationId, setActiveConversationId] = useState<
-    string | null
-  >(null);
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const {
+    messages,
+    loading,
+    input,
+    conversations,
+    activeConversationId,
+    setInput,
+    handleSendMessage,
+    handleNewChat,
+    handleClearChat,
+    handleLoadMessages,
+  } = useChat();
 
-  const loadConversations = async () => {
-    try {
-      const conversations = await fetchConversations();
-      setConversations(conversations);
-    } catch (error) {
-      console.error("Error loading conversations:", error);
-    }
-  };
+  const downloadMarkdown = () => {
+    const markdownContent = messages
+      .map((msg) => {
+        const role = msg.role === "user" ? "**User**" : "**Assistant**";
+        return `${role}:\n\n${msg.content}\n`;
+      })
+      .join("\n---\n\n");
 
-  const loadMessages = async (conversationId: string) => {
-    try {
-      const messages = await fetchMessages(conversationId);
-      setMessages(messages);
-      setActiveConversationId(conversationId);
-    } catch (error) {
-      console.error("Error loading messages:", error);
-      setMessages([]);
-      setActiveConversationId(null);
-    }
-  };
+    const blob = new Blob([markdownContent], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
 
-  const clearChat = async (conversationId: string) => {
-    try {
-      await deleteMessages(conversationId);
-      setMessages([]);
-      setActiveConversationId(null);
-      await loadConversations();
-    } catch (error) {
-      console.error("Error deleting messages:", error);
-      setMessages([]);
-      setActiveConversationId(null);
-    }
-  };
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "conversation.md";
+    link.click();
 
-  const newChat = () => {
-    setActiveConversationId(null);
-    setMessages([]);
-    setInput("");
-  };
-
-  useEffect(() => {
-    loadConversations();
-  }, []);
-
-  const sendMessage = async () => {
-    if (!input.trim()) return; //if the message is empty, do nothing
-
-    const userMessage: Message = { role: "user", content: input };
-
-    setMessages((prev) => [...prev, userMessage]);
-
-    setInput("");
-    setLoading(true);
-
-    try {
-      let convId = activeConversationId;
-
-      if (!convId) {
-        convId = Date.now().toString();
-        setActiveConversationId(convId);
-        await loadConversations();
-      }
-
-      const response = await sendMessageToChatbot(input, convId);
-
-      if (!response.body) {
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "[Error: empty response]" },
-        ]);
-        setLoading(false);
-        return;
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder("utf-8");
-      let aiContent = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        //this line is just improve the typing effect
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        const chunk = decoder.decode(value, { stream: true });
-        const lines = chunk.trim().split("\n");
-
-        for (const line of lines) {
-          if (!line.trim().startsWith("data:")) continue;
-
-          const jsonText = line.replace("data: ", "").trim();
-          if (!jsonText) continue;
-
-          try {
-            const json = JSON.parse(jsonText);
-
-            if (json.type === "content") {
-              aiContent += json.content;
-
-              //This is to update the last message with the typing indicator
-              setMessages((prev) => {
-                const last = prev[prev.length - 1];
-
-                if (last?.role === "typing") {
-                  return [
-                    ...prev.slice(0, -1),
-                    { role: "typing", content: aiContent },
-                  ];
-                }
-
-                return [...prev, { role: "typing", content: aiContent }];
-              });
-            } else if (json.type === "done") {
-              setMessages((prev) => [
-                ...prev.slice(0, -1),
-                { role: "assistant", content: aiContent },
-              ]);
-              setLoading(false);
-            } else if (json.type === "error") {
-              console.error("Error desde backend:", json.content);
-              setMessages((prev) => [
-                ...prev,
-                { role: "assistant", content: `❌ Error: ${json.content}` },
-              ]);
-              setLoading(false);
-            }
-          } catch (err) {
-            console.error("Error al parsear línea SSE:", err, line);
-          }
-        }
-      }
-      await loadConversations();
-      setLoading(false);
-    } catch (error) {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "[Error connecting to Chatbot] " },
-      ]);
-      setLoading(false);
-      return;
-    }
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -172,11 +46,14 @@ function ChatBox() {
 
       {/* Chatbot */}
       <div className="chatbot-container">
-        <div className="chat-history-messages">
-          <button className="new-chat-button" onClick={newChat}>
-            <strong>New conversation</strong>
-          </button>
-        </div>
+        <button onClick={downloadMarkdown} className="chatbot-download-button">
+          ⬇ Markdown
+        </button>
+
+        <button className="new-chat-button" onClick={handleNewChat}>
+          <strong>New conversation</strong>
+        </button>
+
         <h1 className="chatbot-title">Chatbot PDF</h1>
         <div className="chatbot-messages">
           {messages.map((msg, i) => (
@@ -190,7 +67,9 @@ function ChatBox() {
                   : "ai-typing"
               }`}
             >
-              <span>{msg.content}</span>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {msg.content}
+              </ReactMarkdown>
             </div>
           ))}
           {loading && <p className="chatbot-loading">AI is typing...</p>}
@@ -203,20 +82,20 @@ function ChatBox() {
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
-                sendMessage();
+                handleSendMessage();
               }
             }}
             placeholder="Type your message..."
             className="chatbot-input"
           />
-          <button onClick={sendMessage} className="chatbot-send-button">
+          <button onClick={handleSendMessage} className="chatbot-send-button">
             Send
           </button>
         </div>
 
         <button
           onClick={() => {
-            clearChat(activeConversationId ?? "");
+            handleClearChat(activeConversationId ?? "");
           }}
           className="chatbot-clear-button"
         >
@@ -237,7 +116,7 @@ function ChatBox() {
                 key={id}
                 className={activeConversationId === id ? "history-active" : ""}
                 onClick={() => {
-                  loadMessages(id);
+                  handleLoadMessages(id);
                 }}
               >
                 <strong>{firstMessage}</strong>
