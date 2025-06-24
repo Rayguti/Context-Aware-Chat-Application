@@ -21,7 +21,7 @@ def generate_embeddings():
             "chunk": chunk,
             "embedding": embedding
         })
-    print(f"Embeddings generados para {len(embedding_store)} chunks.")
+    print(f"Embeddings generated for {len(embedding_store)} chunks.")
 
 def cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
     v1 = np.array(vec1)
