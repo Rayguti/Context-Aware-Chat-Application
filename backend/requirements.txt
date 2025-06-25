@@ -6,3 +6,4 @@ PyMuPDF
 sse-starlette
 tiktoken
 pydantic
+numpy
