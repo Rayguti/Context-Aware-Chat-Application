@@ -4,6 +4,7 @@
 Run "pip install -r requirements.txt" in a PowerShell or CMD console with admin permitions to avoid any errors
 
       cd backend
+      python -m pip install --upgrade pip
       pip install -r requirements.txt
       uvicorn main:app --reload
 
