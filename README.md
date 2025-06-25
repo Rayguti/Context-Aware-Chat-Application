@@ -1,6 +1,7 @@
 # Setup Instructions
 
 ### Backend
+Run "pip install -r requirements.txt" in a PowerShell or CMD console with admin permitions
 
       cd backend
       pip install -r requirements.txt
