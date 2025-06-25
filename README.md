@@ -137,8 +137,6 @@ Improve the application's visual appearance with a more polished, responsive, an
 
 ## Use examples and pictures
 
-In this section we will see the functionalities and parts of the aplication guide by images.
-
 In this section, we will walk through the functionalities and parts of the application, guided by annotated images.
 
 ### 📄 1. Chat
