@@ -1,9 +1,12 @@
-import openai
+from openai import OpenAI
 from core.config import OPENAI_API_KEY
 from utils.context import pdf_chunks
 import numpy as np
 
-openai.api_key = OPENAI_API_KEY
+
+# Crear el cliente OpenAI
+client = OpenAI(api_key=OPENAI_API_KEY)
+# openai.api_key = OPENAI_API_KEY
 
 # We storage the embeddings as a dictionary list {chunk:str, embedding: list[float]}
 embedding_store = []
@@ -12,11 +15,11 @@ def generate_embeddings():
     global embedding_store
     embedding_store = []
     for chunk in pdf_chunks:
-        response = openai.Embedding.create(
-            model="text-embedding-3-small", 
+        response = client.embeddings.create(
+            model="text-embedding-3-small",
             input=chunk
         )
-        embedding = response['data'][0]['embedding']
+        embedding = response.data[0].embedding
         embedding_store.append({
             "chunk": chunk,
             "embedding": embedding
@@ -30,11 +33,11 @@ def cosine_similarity(vec1: list[float], vec2: list[float]) -> float:
 
 def search_similar_chunks(question: str, top_k: int = 3) -> list[str]:
     # Generarate the embedding for the question
-    response = openai.Embedding.create(
+    response = client.embeddings.create(
         model="text-embedding-3-small",
         input=question
     )
-    question_embedding = response['data'][0]['embedding']
+    question_embedding = response.data[0].embedding
 
     # Calculate the similarity between the question embedding and each chunk's embedding
     similarities = []
